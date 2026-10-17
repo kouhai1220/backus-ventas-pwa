@@ -1,4 +1,10 @@
-﻿:host {
+﻿/* GUÍA — 7. DISEÑO BASE
+   :host aplica el tema al componente. Las variables --blue, --ink y --line unifican colores.
+   Grid organiza columnas; Flex alinea controles. minmax(0, 1fr) permite encoger contenido.
+   Las botellas usan gradientes y pseudoelementos ::before, sin imágenes externas.
+   :focus-visible muestra el foco al navegar con teclado. Ver responsive.scss para tamaños.
+*/
+:host {
   --blue: #1158bb;
   --blue-dark: #102b50;
   --red: var(--blue);
@@ -676,4 +682,3 @@ footer {
     transform: rotate(360deg);
   }
 }
-

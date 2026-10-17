@@ -1,3 +1,11 @@
+﻿<!--
+GUÍA — 6. VISTA Y EVENTOS
+Esta plantilla muestra las señales del componente App; no consulta la base de datos directamente.
+{{ expresion }} imprime texto; [propiedad] enlaza un valor; (evento) ejecuta una acción.
+[ngModel] muestra un valor y (ngModelChange) comunica lo que escribe el usuario.
+@if decide qué mostrar; @for repite elementos; track identifica cada elemento al actualizarlo.
+Recorrido para exponer: Inicio → Catálogo → elegir cantidad → Carrito → registrar → Mis pedidos.
+-->
 <div class="app-shell">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
   <header class="topbar">
@@ -12,6 +20,7 @@
       <span class="status-dot"></span>{{ online() ? 'En línea' : 'Sin conexión' }}
     </div>
   </header>
+  <!-- Cada botón cambia vista; aria-current indica la sección activa a lectores de pantalla. -->
   <nav class="store-nav" aria-label="Navegación principal">
     <button
       type="button"
@@ -68,6 +77,7 @@
       <p class="notice">Sin conexión. Tus pedidos se guardan en este dispositivo.</p>
     }
     @if (vista() === 'inicio') {
+      <!-- Portada: las botellas son formas CSS locales; no requieren descargar fotografías. -->
       <section class="hero">
         <div class="hero-content">
           <span class="eyebrow">TU CATÁLOGO, SIEMPRE A MANO</span>
@@ -91,6 +101,7 @@
           <span class="art-caption">TRADICIÓN QUE NOS UNE</span>
         </div>
       </section>
+      <!-- Los indicadores salen de computed: cambian automáticamente al recibir el catálogo. -->
       <section class="stats" aria-label="Resumen del catálogo">
         <div>
           <span class="stat-icon" aria-hidden="true">✓</span>
@@ -206,6 +217,7 @@
           </button>
         </div>
         <div class="product-grid">
+          <!-- filtrados() combina búsqueda, categoría, stock y favoritos sin modificar los datos base. -->
           @for (producto of filtrados(); track producto.id) {
             <article
               class="product-card"
@@ -250,6 +262,7 @@
                 <label class="quantity-label" [for]="'cantidad-' + producto.id"
                   >¿Cuántas unidades deseas?</label
                 >
+                <!-- #cantidad referencia el input: valueAsNumber obtiene el número y validity aplica min/max/step. El máximo descuenta lo que ya está en el carrito. -->
                 <div class="quantity-picker">
                   <button
                     type="button"
@@ -349,6 +362,7 @@
         @if (tienda.carrito().length) {
           <div class="checkout-layout">
             <div class="cart-lines">
+              <!-- El carrito viene del servicio compartido; cambiar recibe la cantidad total y cero retira el artículo. -->
               @for (linea of tienda.carrito(); track linea.producto.id) {
                 <article class="cart-line">
                   <div class="mini-product" aria-hidden="true">
@@ -434,6 +448,7 @@
                 Vaciar carrito
               </button>
             </div>
+            <!-- ngSubmit coordina el registro; required y maxlength ayudan a validar los campos. El servicio vuelve a comprobar datos, stock y precios. -->
             <form class="order-summary" (ngSubmit)="registrarPedido()">
               <h3>Resumen del pedido</h3>
               <div>
@@ -448,6 +463,7 @@
                 <span>IGV incluido (18 %)</span
                 ><span>{{ dinero(tienda.total() - Math.round(tienda.total() / 1.18)) }}</span>
               </div>
+              <!-- Los precios incluyen IGV: base = total / 1.18, impuesto = total menos base. Se calcula en céntimos y se muestra con dinero(). -->
               <div class="order-total">
                 <span>Total</span><strong>{{ dinero(tienda.total()) }}</strong>
               </div>
@@ -551,6 +567,7 @@
         </p>
         <div class="orders-list">
           @for (pedido of pedidosVisibles(); track pedido.id) {
+            <!-- details/summary despliega el pedido sin JavaScript adicional. DatePipe presenta la fecha y las líneas conservan los precios del registro. -->
             <details class="order-card">
               <summary>
                 <span

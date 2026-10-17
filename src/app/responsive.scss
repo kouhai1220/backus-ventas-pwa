@@ -1,4 +1,12 @@
-﻿@media (max-width: 1024px) {
+﻿/* GUÍA — DISEÑO RESPONSIVO
+   Las media queries cambian el diseño según el ancho disponible (píxeles CSS).
+   Hasta 1024 px: catálogo de dos columnas. Hasta 760 px: carrito y resumen se apilan.
+   Hasta 560 px: catálogo de una columna y navegación fija abajo.
+   safe-area-inset-bottom reserva espacio en móviles con área de gestos.
+   prefers-reduced-motion respeta la preferencia de reducir animaciones.
+   Estos estilos se cargan después de app.scss y tienda.scss para adaptar sus reglas.
+*/
+@media (max-width: 1024px) {
   .hero {
     padding: 36px;
   }

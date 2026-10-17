@@ -1,4 +1,10 @@
-﻿.store-nav {
+﻿/* GUÍA — ESTILOS DE COMPRA
+   Navegación, cantidades, carrito, formulario e historial tienen estilos específicos aquí.
+   El resumen usa position: sticky en escritorio para acompañar el desplazamiento.
+   min-height en botones mejora el uso táctil; :disabled comunica acciones no disponibles.
+   loading-dot gira con @keyframes spin, definido en app.scss.
+*/
+.store-nav {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -360,4 +366,3 @@
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-
