@@ -1,1 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
+﻿html {
+  color-scheme: light;
+  scroll-padding-top: 90px;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  touch-action: manipulation;
+}
+::selection {
+  background: #d4e5ff;
+  color: #102b50;
+}
+@media (max-width: 560px) {
+  html {
+    scroll-padding-top: 20px;
+  }
+}

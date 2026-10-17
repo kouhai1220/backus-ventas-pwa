@@ -1,160 +1,617 @@
 <div class="app-shell">
-
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon">B</div>
-
+      <div class="brand-icon" aria-hidden="true">B</div>
       <div>
         <h1>Backus Ventas</h1>
-        <span>Catálogo comercial</span>
+        <span>Tu aliado en cada pedido</span>
       </div>
     </div>
-
-  <div
-  class="status"
-  [class.status-offline]="!online()"
->
-  <span class="status-dot"></span>
-
-  @if (online()) {
-    En línea
-  } @else {
-    Sin conexión
-  }
-</div>
+    <div class="status" [class.status-offline]="!online()" role="status">
+      <span class="status-dot"></span>{{ online() ? 'En línea' : 'Sin conexión' }}
+    </div>
   </header>
-
-  <main class="container">
-
-    <section class="hero">
-      <div class="hero-content">
-        <span class="eyebrow">CATÁLOGO DIGITAL</span>
-
-        <h2>Productos disponibles</h2>
-
-        <p>
-          Consulta precios y stock de los productos disponibles.
-          El catálogo puede seguir disponible incluso sin conexión.
-        </p>
-
-        <div class="hero-tags">
-          <span>✓ Runtime Caching</span>
-          <span>✓ Disponible offline</span>
-          <span>✓ Angular PWA</span>
+  <nav class="store-nav" aria-label="Navegación principal">
+    <button
+      type="button"
+      [class.active]="vista() === 'inicio'"
+      [attr.aria-current]="vista() === 'inicio' ? 'page' : null"
+      (click)="vista.set('inicio')"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="m3 10 9-7 9 7v10H5V10M9 20v-7h6v7" /></svg
+      ><span class="nav-label">Inicio</span>
+    </button>
+    <button
+      type="button"
+      [class.active]="vista() === 'catalogo'"
+      [attr.aria-current]="vista() === 'catalogo' ? 'page' : null"
+      (click)="vista.set('catalogo')"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" /></svg
+      ><span class="nav-label">Catálogo</span>
+    </button>
+    <button
+      type="button"
+      [class.active]="vista() === 'carrito'"
+      [attr.aria-current]="vista() === 'carrito' ? 'page' : null"
+      (click)="vista.set('carrito')"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M2 3h3l3 12h11l3-9H6" />
+        <circle cx="9" cy="20" r="1" />
+        <circle cx="18" cy="20" r="1" /></svg
+      ><span class="nav-label">Carrito</span><span class="nav-count">{{ tienda.cantidad() }}</span>
+    </button>
+    <button
+      type="button"
+      [class.active]="vista() === 'pedidos'"
+      [attr.aria-current]="vista() === 'pedidos' ? 'page' : null"
+      (click)="vista.set('pedidos')"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M6 3h12v19l-3-2-3 2-3-2-3 2V3M9 8h6M9 12h6M9 16h3" /></svg
+      ><span class="nav-label">Mis pedidos</span
+      ><span class="nav-count">{{ tienda.pedidos().length }}</span>
+    </button>
+  </nav>
+  <main class="container" id="contenido" tabindex="-1">
+    @if (tienda.mensaje()) {
+      <p class="notice" role="status">{{ tienda.mensaje() }}</p>
+    }
+    @if (!online() && vista() !== 'catalogo' && vista() !== 'inicio') {
+      <p class="notice">Sin conexión. Tus pedidos se guardan en este dispositivo.</p>
+    }
+    @if (vista() === 'inicio') {
+      <section class="hero">
+        <div class="hero-content">
+          <span class="eyebrow">TU CATÁLOGO, SIEMPRE A MANO</span>
+          <h2>Grandes marcas.<br /><em>Todo en un lugar.</em></h2>
+          <p>
+            Las marcas de siempre, a un paso de tu negocio. Elige tus productos y prepara tu próximo
+            pedido en minutos.
+          </p>
+          <button class="hero-link" type="button" (click)="vista.set('catalogo')">
+            Explorar catálogo ↗
+          </button>
+          <div class="hero-tags"><span>Precios en soles</span><span>Disponible offline</span></div>
         </div>
-      </div>
-
-      <div class="hero-card">
-        <span class="hero-card-label">Productos</span>
-        <strong>{{ productos().length }}</strong>
-        <span>en catálogo</span>
-      </div>
-    </section>
-
-
-    <section class="catalog">
-
-      <div class="section-header">
-        <div>
-          <span class="section-label">CATÁLOGO</span>
-          <h2>Nuestros productos</h2>
-        </div>
-
-        <span class="product-count">
-          {{ productos().length }} productos
-        </span>
-      </div>
-
-
-      <div class="product-grid">
-
-        @for (producto of productos(); track producto.id) {
-
-          <article class="product-card">
-
-            <div class="product-top">
-              <div class="product-icon">
-                {{ producto.nombre.charAt(0) }}
-              </div>
-
-              <span class="available">
-                Disponible
-              </span>
-            </div>
-
-
-            <div class="product-info">
-              <span class="category">
-                {{ producto.categoria }}
-              </span>
-
-              <h3>{{ producto.nombre }}</h3>
-            </div>
-
-
-            <div class="product-details">
-
-              <div class="price">
-                <span>Precio</span>
-
-                <strong>
-                  <small>S/</small>
-                  {{ producto.precio.toFixed(2) }}
-                </strong>
-              </div>
-
-              <div class="stock">
-                <span>Stock</span>
-
-                <strong>
-                  {{ producto.stock }}
-                </strong>
-
-                <small>unidades</small>
-              </div>
-
-            </div>
-
-          </article>
-
-        } @empty {
-
-          <div class="empty-state">
-            <h3>No hay productos disponibles</h3>
-            <p>El catálogo se encuentra vacío.</p>
+        <div class="hero-art" aria-hidden="true">
+          <span class="orbit"></span>
+          <div class="bottle bottle-left"><span>CRISTAL</span></div>
+          <div class="bottle bottle-center">
+            <span>PILSEN<br />CALLAO</span>
           </div>
-
+          <div class="bottle bottle-right"><span>CUSQUEÑA</span></div>
+          <span class="art-caption">TRADICIÓN QUE NOS UNE</span>
+        </div>
+      </section>
+      <section class="stats" aria-label="Resumen del catálogo">
+        <div>
+          <span class="stat-icon" aria-hidden="true">✓</span>
+          <p>
+            <strong>{{ productos().length }}</strong
+            ><span>En catálogo</span>
+          </p>
+        </div>
+        <div>
+          <span class="stat-icon" aria-hidden="true">✓</span>
+          <p>
+            <strong>{{ disponibles() }}</strong
+            ><span>Con stock</span>
+          </p>
+        </div>
+        <div>
+          <span class="stat-icon" aria-hidden="true">✓</span>
+          <p>
+            <strong>{{ unidades() }}</strong
+            ><span>Unidades disponibles</span>
+          </p>
+        </div>
+      </section>
+    }
+    @if (vista() === 'inicio' || vista() === 'catalogo') {
+      <section class="catalog" aria-labelledby="catalogo-titulo" [attr.aria-busy]="cargando()">
+        <div class="section-header">
+          <div>
+            <span class="section-label">CATÁLOGO</span>
+            <h2 id="catalogo-titulo">Nuestro catálogo</h2>
+            <p class="section-description">Calidad de siempre para tu próximo pedido.</p>
+          </div>
+          <button type="button" (click)="cargarCatalogo()" [disabled]="cargando()">
+            {{ cargando() ? 'Cargando…' : 'Actualizar catálogo' }}
+          </button>
+        </div>
+        <div class="catalog-tabs" aria-label="Vista del catálogo">
+          <button
+            type="button"
+            [class.active]="!soloFavoritos()"
+            [attr.aria-pressed]="!soloFavoritos()"
+            (click)="soloFavoritos.set(false)"
+          >
+            Todos los productos
+          </button>
+          <button
+            type="button"
+            [class.active]="soloFavoritos()"
+            [attr.aria-pressed]="soloFavoritos()"
+            (click)="soloFavoritos.set(true)"
+          >
+            Favoritos <span>{{ favoritos().length }}</span>
+          </button>
+        </div>
+        <div class="filters">
+          <label
+            >Buscar producto<input
+              type="search"
+              placeholder="Ej. Cristal o Cusqueña"
+              [ngModel]="busqueda()"
+              (ngModelChange)="busqueda.set($event)"
+          /></label>
+          <label
+            >Categoría<select [ngModel]="categoria()" (ngModelChange)="categoria.set($event)">
+              <option value="">Todas</option>
+              @for (item of categorias(); track item) {
+                <option [value]="item">{{ item }}</option>
+              }
+            </select></label
+          >
+          <label
+            >Ordenar por<select [ngModel]="orden()" (ngModelChange)="orden.set($event)">
+              <option value="nombre">Nombre</option>
+              <option value="precio">Menor precio</option>
+            </select></label
+          >
+          <label class="check"
+            ><input
+              type="checkbox"
+              [ngModel]="soloDisponibles()"
+              (ngModelChange)="soloDisponibles.set($event)"
+            />
+            Solo con stock</label
+          >
+        </div>
+        <div class="messages" aria-live="polite">
+          @if (!online()) {
+            <p class="notice">
+              Sin conexión. Se muestran los datos guardados si ya consultaste el catálogo en este
+              dispositivo.
+            </p>
+          }
+          @if (aviso()) {
+            <p class="notice">{{ aviso() }}</p>
+          }
+          @if (error()) {
+            <p class="error" role="alert">
+              {{ error() }} <button type="button" (click)="cargarCatalogo()">Reintentar</button>
+            </p>
+          }
+          @if (cargando()) {
+            <p class="loading-state">
+              <span class="loading-dot" aria-hidden="true"></span> Actualizando catálogo y precios…
+            </p>
+          }
+        </div>
+        <div class="results">
+          <p class="result-count" aria-live="polite">
+            {{ filtrados().length }} de {{ productos().length }} productos
+          </p>
+          <button class="text-button" type="button" (click)="limpiarFiltros()">
+            Restablecer filtros ↺
+          </button>
+        </div>
+        <div class="product-grid">
+          @for (producto of filtrados(); track producto.id) {
+            <article
+              class="product-card"
+              [class.cristal]="producto.id === 1"
+              [class.pilsen]="producto.id === 2"
+              [class.cusquena]="producto.id === 3"
+            >
+              <div class="product-visual">
+                <span class="available" [class.unavailable]="producto.stock === 0">{{
+                  producto.stock > 0 ? '● Disponible' : 'Agotado'
+                }}</span>
+                <button
+                  class="favorite"
+                  type="button"
+                  [class.selected]="favoritos().includes(producto.id)"
+                  [attr.aria-pressed]="favoritos().includes(producto.id)"
+                  [attr.aria-label]="'Favorito: ' + producto.nombre"
+                  (click)="alternarFavorito(producto.id)"
+                >
+                  {{ favoritos().includes(producto.id) ? '♥' : '♡' }}
+                </button>
+                <div class="bottle" aria-hidden="true">
+                  <span>{{ producto.nombre.split(' ')[0] }}</span>
+                </div>
+                <span class="visual-caption">SELECCIÓN BACKUS</span>
+              </div>
+              <div class="product-info">
+                <span class="category">{{ producto.categoria }}</span>
+                <h3>{{ producto.nombre }}</h3>
+              </div>
+              <div class="product-details">
+                <div class="price">
+                  <span>Precio por unidad</span
+                  ><strong><small>S/</small> {{ producto.precio.toFixed(2) }}</strong>
+                </div>
+                <div class="stock">
+                  <span>Stock</span><strong>{{ producto.stock }}</strong
+                  ><small>unidades</small>
+                </div>
+              </div>
+              <div class="buy-actions">
+                <label class="quantity-label" [for]="'cantidad-' + producto.id"
+                  >¿Cuántas unidades deseas?</label
+                >
+                <div class="quantity-picker">
+                  <button
+                    type="button"
+                    [disabled]="cantidad.valueAsNumber <= 1 || !cantidad.value"
+                    [attr.aria-label]="'Reducir cantidad de ' + producto.nombre"
+                    (click)="cantidad.stepDown()"
+                  >
+                    −
+                  </button>
+                  <input
+                    #cantidad
+                    [id]="'cantidad-' + producto.id"
+                    type="number"
+                    [ngModel]="1"
+                    min="1"
+                    [max]="Math.max(0, producto.stock - tienda.cantidadDe(producto.id))"
+                    step="1"
+                    inputmode="numeric"
+                    required
+                  />
+                  <button
+                    type="button"
+                    [disabled]="
+                      !cantidad.value ||
+                      cantidad.valueAsNumber >= producto.stock - tienda.cantidadDe(producto.id)
+                    "
+                    [attr.aria-label]="'Aumentar cantidad de ' + producto.nombre"
+                    (click)="cantidad.stepUp()"
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  class="primary"
+                  type="button"
+                  [disabled]="
+                    !tienda.listo() ||
+                    tienda.ocupado() ||
+                    cargando() ||
+                    !!error() ||
+                    !cantidad.validity.valid
+                  "
+                  (click)="
+                    tienda.cambiar(
+                      producto,
+                      tienda.cantidadDe(producto.id) + cantidad.valueAsNumber
+                    )
+                  "
+                >
+                  Agregar al carrito
+                </button>
+                <span class="quantity-hint">{{
+                  producto.stock === 0
+                    ? 'Próximamente disponible'
+                    : 'Puedes agregar hasta ' +
+                      Math.max(0, producto.stock - tienda.cantidadDe(producto.id)) +
+                      ' unidades'
+                }}</span>
+                @if (tienda.cantidadDe(producto.id)) {
+                  <button class="text-button" type="button" (click)="vista.set('carrito')">
+                    Ver carrito · {{ tienda.cantidadDe(producto.id) }} unidades
+                  </button>
+                }
+              </div>
+            </article>
+          } @empty {
+            @if (!cargando() && !error()) {
+              <div class="empty-state">
+                <h3>
+                  {{
+                    productos().length
+                      ? 'No encontramos coincidencias'
+                      : 'No hay productos disponibles'
+                  }}
+                </h3>
+                <p>
+                  Prueba con otro nombre o revisa los filtros. Marca productos con el corazón para
+                  verlos aquí durante esta sesión.
+                </p>
+                <button type="button" (click)="limpiarFiltros()">Limpiar filtros</button>
+              </div>
+            }
+          }
+        </div>
+      </section>
+    }
+    @if (vista() === 'carrito') {
+      <section class="shop-section" aria-labelledby="carrito-titulo">
+        <div class="section-header">
+          <div>
+            <span class="section-label">TU COMPRA</span>
+            <h2 id="carrito-titulo">Carrito de compras</h2>
+            <p class="section-description">Revisa tus productos y elige las cantidades.</p>
+          </div>
+          <button type="button" (click)="vista.set('catalogo')">Seguir comprando</button>
+        </div>
+        @if (tienda.carrito().length) {
+          <div class="checkout-layout">
+            <div class="cart-lines">
+              @for (linea of tienda.carrito(); track linea.producto.id) {
+                <article class="cart-line">
+                  <div class="mini-product" aria-hidden="true">
+                    {{ linea.producto.nombre.charAt(0) }}
+                  </div>
+                  <div class="line-info">
+                    <h3>{{ linea.producto.nombre }}</h3>
+                    <p>{{ dinero(linea.producto.precio * 100) }} por unidad</p>
+                    @if (productoActual(linea.producto).precio !== linea.producto.precio) {
+                      <p class="price-change">
+                        Precio actual: {{ dinero(productoActual(linea.producto).precio * 100) }}.
+                        Ajusta la cantidad para aceptarlo.
+                      </p>
+                    }
+                    @if (linea.cantidad > productoActual(linea.producto).stock) {
+                      <p class="price-change">
+                        Stock insuficiente: {{ productoActual(linea.producto).stock }} unidades.
+                      </p>
+                    }
+                  </div>
+                  <div class="quantity" aria-label="Cantidad">
+                    <button
+                      type="button"
+                      [disabled]="tienda.ocupado()"
+                      [attr.aria-label]="'Reducir ' + linea.producto.nombre"
+                      (click)="
+                        tienda.cambiar(
+                          productoActual(linea.producto),
+                          Math.min(linea.cantidad - 1, productoActual(linea.producto).stock)
+                        )
+                      "
+                    >
+                      −</button
+                    ><input
+                      #cantidadCarrito
+                      type="number"
+                      min="0"
+                      [max]="productoActual(linea.producto).stock"
+                      step="1"
+                      inputmode="numeric"
+                      required
+                      [value]="linea.cantidad"
+                      [disabled]="tienda.ocupado()"
+                      [attr.aria-label]="'Cantidad de ' + linea.producto.nombre"
+                      (change)="
+                        cantidadCarrito.validity.valid
+                          ? tienda.cambiar(
+                              productoActual(linea.producto),
+                              cantidadCarrito.valueAsNumber
+                            )
+                          : (cantidadCarrito.value = '' + linea.cantidad)
+                      "
+                    />
+                    <button
+                      type="button"
+                      [disabled]="
+                        tienda.ocupado() || linea.cantidad >= productoActual(linea.producto).stock
+                      "
+                      [attr.aria-label]="'Aumentar ' + linea.producto.nombre"
+                      (click)="tienda.cambiar(productoActual(linea.producto), linea.cantidad + 1)"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <strong>{{ dinero(linea.producto.precio * 100 * linea.cantidad) }}</strong>
+                  <button
+                    class="text-button"
+                    type="button"
+                    [disabled]="tienda.ocupado()"
+                    [attr.aria-label]="'Retirar ' + linea.producto.nombre"
+                    (click)="tienda.cambiar(productoActual(linea.producto), 0)"
+                  >
+                    Retirar
+                  </button>
+                </article>
+              }
+              <button
+                class="text-button"
+                type="button"
+                [disabled]="tienda.ocupado()"
+                (click)="tienda.vaciar()"
+              >
+                Vaciar carrito
+              </button>
+            </div>
+            <form class="order-summary" (ngSubmit)="registrarPedido()">
+              <h3>Resumen del pedido</h3>
+              <div>
+                <span>Productos ({{ tienda.cantidad() }})</span
+                ><strong>{{ dinero(tienda.total()) }}</strong>
+              </div>
+              <div>
+                <span>Base imponible</span
+                ><span>{{ dinero(Math.round(tienda.total() / 1.18)) }}</span>
+              </div>
+              <div>
+                <span>IGV incluido (18 %)</span
+                ><span>{{ dinero(tienda.total() - Math.round(tienda.total() / 1.18)) }}</span>
+              </div>
+              <div class="order-total">
+                <span>Total</span><strong>{{ dinero(tienda.total()) }}</strong>
+              </div>
+              <label
+                >Cliente o negocio<input
+                  name="cliente"
+                  required
+                  maxlength="100"
+                  autocomplete="organization"
+                  [ngModel]="cliente()"
+                  (ngModelChange)="cliente.set($event)"
+                  placeholder="Nombre del cliente"
+              /></label>
+              <label
+                >Dirección de entrega<textarea
+                  name="direccion"
+                  required
+                  maxlength="240"
+                  autocomplete="street-address"
+                  [ngModel]="direccion()"
+                  (ngModelChange)="direccion.set($event)"
+                  placeholder="Dirección y referencia"
+                ></textarea>
+              </label>
+              <button
+                class="primary"
+                type="submit"
+                [disabled]="
+                  tienda.ocupado() ||
+                  !tienda.listo() ||
+                  cargando() ||
+                  !!error() ||
+                  !productos().length ||
+                  !cliente().trim() ||
+                  !direccion().trim()
+                "
+              >
+                {{ tienda.ocupado() ? 'Guardando…' : 'Registrar pedido' }}
+              </button>
+              <p>
+                Precios con IGV incluido. Pedido académico guardado localmente; no se envía a Backus
+                ni genera cobros.
+              </p>
+              @if (error()) {
+                <button type="button" (click)="cargarCatalogo()">
+                  Reintentar cargar el catálogo
+                </button>
+              }
+            </form>
+          </div>
+        } @else {
+          <div class="empty-state">
+            <h3>Tu carrito está vacío</h3>
+            <p>Explora el catálogo y agrega tus productos favoritos.</p>
+            <button class="primary" type="button" (click)="vista.set('catalogo')">
+              Ver productos
+            </button>
+          </div>
         }
-
-      </div>
-
-    </section>
-
-
+      </section>
+    }
+    @if (vista() === 'pedidos') {
+      <section class="shop-section" aria-labelledby="pedidos-titulo">
+        <div class="section-header">
+          <div>
+            <span class="section-label">GUARDADOS EN ESTE DISPOSITIVO</span>
+            <h2 id="pedidos-titulo">Mis pedidos</h2>
+            <p class="section-description">Cada pedido, con todos sus detalles en un solo lugar.</p>
+          </div>
+          <button type="button" (click)="vista.set('catalogo')">Nuevo pedido +</button>
+        </div>
+        <div class="catalog-tabs" aria-label="Filtrar pedidos">
+          <button
+            type="button"
+            [class.active]="filtroPedidos() === 'todos'"
+            [attr.aria-pressed]="filtroPedidos() === 'todos'"
+            (click)="filtroPedidos.set('todos')"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            [class.active]="filtroPedidos() === 'activos'"
+            [attr.aria-pressed]="filtroPedidos() === 'activos'"
+            (click)="filtroPedidos.set('activos')"
+          >
+            Guardados
+          </button>
+          <button
+            type="button"
+            [class.active]="filtroPedidos() === 'cancelados'"
+            [attr.aria-pressed]="filtroPedidos() === 'cancelados'"
+            (click)="filtroPedidos.set('cancelados')"
+          >
+            Cancelados
+          </button>
+        </div>
+        <p class="local-note">
+          Los pedidos permanecen en este navegador. No hay envío automático ni confirmación de una
+          tienda real.
+        </p>
+        <div class="orders-list">
+          @for (pedido of pedidosVisibles(); track pedido.id) {
+            <details class="order-card">
+              <summary>
+                <span
+                  ><strong>Pedido #{{ pedido.id.slice(0, 8).toUpperCase() }}</strong
+                  ><small
+                    >{{ pedido.fecha | date: 'dd/MM/yyyy HH:mm' }} · {{ pedido.cliente }}</small
+                  ></span
+                ><span class="order-badge" [class.cancelled]="pedido.estado === 'Cancelado'">{{
+                  pedido.estado
+                }}</span
+                ><strong>{{ dinero(pedido.totalCentimos) }}</strong
+                ><span aria-hidden="true">⌄</span>
+              </summary>
+              <div class="order-body">
+                <p><strong>Entrega:</strong> {{ pedido.direccion }}</p>
+                @for (linea of pedido.lineas; track linea.producto.id) {
+                  <div class="order-item">
+                    <span
+                      >{{ linea.cantidad }} × {{ linea.producto.nombre }}
+                      <small>({{ dinero(linea.producto.precio * 100) }} c/u)</small></span
+                    ><strong>{{ dinero(linea.producto.precio * 100 * linea.cantidad) }}</strong>
+                  </div>
+                }
+                <p>
+                  Total con IGV incluido: <strong>{{ dinero(pedido.totalCentimos) }}</strong>
+                </p>
+                @if (pedido.estado !== 'Cancelado') {
+                  <button
+                    type="button"
+                    [disabled]="tienda.ocupado()"
+                    (click)="tienda.cancelar(pedido.id)"
+                  >
+                    Cancelar pedido local
+                  </button>
+                }
+              </div>
+            </details>
+          } @empty {
+            <div class="empty-state">
+              <h3>No hay pedidos en esta vista</h3>
+              <p>Los pedidos que registres aparecerán aquí con todos sus detalles.</p>
+            </div>
+          }
+        </div>
+      </section>
+    }
     <section class="pwa-info">
-
-      <div class="pwa-icon">
-        ⚡
-      </div>
-
+      <div class="pwa-icon" aria-hidden="true">↓</div>
       <div>
-        <strong>Aplicación Web Progresiva</strong>
-
+        <strong>Tu catálogo, también sin conexión</strong>
         <p>
-          El catálogo utiliza Runtime Caching para mantener
-          información disponible cuando no existe conexión a Internet.
+          Para usarlo offline, abre la aplicación con Internet y consulta el catálogo primero.
+          Puedes instalarla desde el menú de tu navegador. Los precios y el stock son datos de
+          demostración y pueden estar guardados en caché.
         </p>
       </div>
-
     </section>
-
   </main>
-
-
   <footer>
-    <p>Backus Ventas PWA · Taller de Aplicaciones Web Progresivas</p>
+    <p>
+      Backus Ventas PWA · Proyecto académico sin afiliación comercial · No procesa ventas reales
+    </p>
   </footer>
-
 </div>
-
-<router-outlet />
